@@ -8,7 +8,7 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 import torchvision
-import pytorch_lightninng as pl
+import pytorch_lightning as pl
 from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
 
@@ -29,7 +29,7 @@ class FrozenRep(pl.LightningDataModule):
 
     def setup(self):
         for x, y in self.dataloader:
-            with torch.no_grad:
+            with torch.no_grad():
                 self.x.extend(self.headless_encoder(x))
                 self.y.extend(y.numpy())
         self.x = torch.stack(self.x)
@@ -106,7 +106,7 @@ class ResnetLinearHead(LogisticReg):
 # ======================================================================================
 
 def train_linear(encoder, trainloader, testloader, num_classes=2, num_epochs=500,
-                 freeze_reps=True):
+                 batch_size=256, freeze_reps=True):
     """
     encoder: the resnet encoder, the final fc layer is untrained
     trainloader/testloader: dataloaders for the _original_ dataset
@@ -114,8 +114,8 @@ def train_linear(encoder, trainloader, testloader, num_classes=2, num_epochs=500
                  (much faster training)
     """
     if freeze_reps:
-        trainloader = FrozenRep(trainloader, encoder).train_dataloader()
-        testloader = FrozenRep(testloader, encoder).test_dataloader()
+        trainloader = FrozenRep(trainloader, encoder).train_dataloader(batch_size)
+        testloader = FrozenRep(testloader, encoder).test_dataloader(batch_size)
         x, y = next(iter(trainloader))
         input_dim = x.view(x.shape[0], -1).shape[1]
         model = LogisticReg(input_dim, num_classes)
