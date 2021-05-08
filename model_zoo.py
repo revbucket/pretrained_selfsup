@@ -7,6 +7,10 @@ import torch.nn as nn
 import torchvision
 import glob
 from collections import OrderedDict
+from pathlib import Path
+import os
+
+abspath = lambda p: os.path.join(Path(__file__).parent, p)
 # =======================================================================
 # =                          SimCLR                                     =
 # =======================================================================
@@ -20,7 +24,7 @@ Github: https://github.com/google-research/simclr
 """
 
 
-SIMCLR_PATH = 'models/simclr_resnet50_bs2k_epochs600.pth.tar'
+SIMCLR_PATH = abspath('models/simclr_resnet50_bs2k_epochs600.pth.tar')
 def load_pretrained_simclr():
     state_dict = torch.load(SIMCLR_PATH, map_location='cpu')['state_dict']
     new_state_dict = OrderedDict()
@@ -47,7 +51,7 @@ Github: https://github.com/facebookresearch/moco
 """
 
 
-MOCO_PATH = 'models/mocov2_epochs800.pth.tar'
+MOCO_PATH = abspath('models/mocov2_epochs800.pth.tar')
 def load_pretrained_moco():
     resnet = torchvision.models.resnet50()
     checkpoint = torch.load(MOCO_PATH, map_location='cpu')
@@ -95,7 +99,7 @@ Github: https://github.com/sthalles/PyTorch-BYOL [not official implementation]
 	Batch Size: 64
 """
 
-BYOL_PATH = 'models/byol_stl10_bs64_epochs80.pth.tar'
+BYOL_PATH = abspath('models/byol_stl10_bs64_epochs80.pth.tar')
 
 def load_pretrained_byol():
 
